@@ -38,6 +38,7 @@ namespace OpenTS2.Scenes
                 try
                 {
                     lot.CreateLotImposter();
+                    //break;
                 }
                 catch (KeyNotFoundException)
                 {

@@ -17,12 +17,19 @@ public class LotImposterGMDCTest : MonoBehaviour
     private void Start()
     {
         var contentProvider = ContentProvider.Get();
+
         var lotsFolderPath = Path.Combine(Filesystem.GetUserPath(), $"Neighborhoods/{NeighborhoodPrefix}/Lots");
         var lotFilename = $"{NeighborhoodPrefix}_Lot{LotID}.package";
         var lotFullPath = Path.Combine(lotsFolderPath, lotFilename);
         contentProvider.AddPackage(lotFullPath);
 
         var lotImposterResource = contentProvider.GetAssetsOfType<ScenegraphResourceAsset>(TypeIDs.SCENEGRAPH_CRES)[0];
+
+        File.WriteAllText("C:\\Users\\ammar\\UnityProjects\\dump.json", lotImposterResource.ResourceCollection.ToString());
+
+        // Load base game assets.
+        contentProvider.AddPackages(
+            Filesystem.GetPackagesInDirectory(Filesystem.GetDataPathForProduct(ProductFlags.BaseGame) + "/Res/Sims3D"));
 
         var gameObject = lotImposterResource.CreateGameObjectForShape();
     }

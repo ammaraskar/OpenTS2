@@ -46,6 +46,8 @@ namespace OpenTS2.Content
             {
                 throw new KeyNotFoundException("Lot does not have imposter");
             }
+            Debug.Log($"Imposter: {imposter.ResourceCollection}");
+
             var gameObject = imposter.CreateGameObjectForShape();
             gameObject.transform.position = new Vector3(
                 _lotInfo.LocationX * NeighborhoodTerrainAsset.TerrainGridSize,

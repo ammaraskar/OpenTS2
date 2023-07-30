@@ -24,6 +24,11 @@ namespace OpenTS2.Content.DBPF.Scenegraph
             var firstResourceNode = ResourceCollection.Blocks.OfType<ResourceNodeBlock>().First();
             var resourceName = firstResourceNode.ResourceName;
 
+            // Temporary hack until I figure out what has multiple shapes...
+            if (ResourceCollection.Blocks.OfType<ShapeRefNodeBlock>().Count() != 1)
+            {
+                return null;
+            }
             var shapeRef = ResourceCollection.GetBlockOfType<ShapeRefNodeBlock>();
             var shapeTransform = shapeRef.Renderable.Bounded.Transform;
 
@@ -73,6 +78,38 @@ namespace OpenTS2.Content.DBPF.Scenegraph
                     }
 
                     primitiveObject.transform.SetParent(simsRotation.transform);
+                }
+            }
+
+            // Go through any other cTransformNodes as these might have references to other resource assets.
+            foreach (var transform in ResourceCollection.Blocks.OfType<TransformNodeBlock>())
+            {
+                foreach (var reference in transform.CompositionTree.References)
+                {
+                    if (reference.Index == -1)
+                    {
+                        continue;
+                    }
+
+                    var nthBlock = ResourceCollection.Blocks[reference.Index];
+
+                    var rnode = (ResourceNodeBlock)nthBlock;
+
+                    var location = rnode.ResourceLocation;
+                    var key = ResourceCollection.FileLinks[location.Index];
+                    Debug.Assert(key.TypeID == TypeIDs.SCENEGRAPH_CRES);
+                    var resource = ContentProvider.Get().GetAsset<ScenegraphResourceAsset>(key);
+
+                    var subObject = resource.CreateGameObjectForShape();
+                    if (subObject == null)
+                    {
+                        continue;
+                    }
+
+                    var newTransform = new Vector3(transform.Transform.x, transform.Transform.z, transform.Transform.y);
+                    subObject.transform.Find("simsRotations").position = newTransform;
+                    subObject.transform.Find("simsRotations").localRotation = transform.Rotation;
+                    subObject.transform.SetParent(gameObject.transform, true);
                 }
             }
 

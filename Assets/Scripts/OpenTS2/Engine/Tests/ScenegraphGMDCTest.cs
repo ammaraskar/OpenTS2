@@ -5,6 +5,7 @@ using OpenTS2.Content.DBPF.Scenegraph;
 using OpenTS2.Files;
 using OpenTS2.Files.Formats.DBPF;
 using UnityEngine;
+using File = System.IO.File;
 
 public class ScenegraphGMDCTest : MonoBehaviour
 {
@@ -17,17 +18,19 @@ public class ScenegraphGMDCTest : MonoBehaviour
             Filesystem.GetPackagesInDirectory(Filesystem.GetDataPathForProduct(ProductFlags.BaseGame) + "/Res/Sims3D"));
 
         //var resourceName = "vehiclePizza_cres";
-        var resourceName = "chairReclinerPuffy_cres";
+        var resourceName = "pinballMachine_cres";
         var resource = contentProvider.GetAsset<ScenegraphResourceAsset>(
             new ResourceKey(resourceName, GroupIDs.Scenegraph, TypeIDs.SCENEGRAPH_CRES));
 
         Debug.Log($"scenegraphModel: {resource.GlobalTGI}");
-        var gameObject = resource.CreateRootGameObject();
-        Debug.Log($"gameObject: {gameObject}");
+        File.WriteAllText("C:\\Users\\Ammar\\UnityProjects\\dump.json", resource.ResourceCollection.ToString());
+        //var gameObject = resource.CreateRootGameObject();
+        //Debug.Log($"gameObject: {gameObject}");
 
         // For animation testing...
         //AddAnimations(gameObject);
-        AddChairAnimations(gameObject);
+        //AddChairAnimations(gameObject);
+        SimCharacterComponent.CreateNakedBaseSim();
     }
 
     private static void AddAnimations(GameObject gameObject)
